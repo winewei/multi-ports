@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "os"
     "strings"
     "encoding/json"
@@ -17,15 +18,16 @@ func main() {
     for _, v := range ports {
         k := ":" + v
         go func(port string) {
-           mux := http.NewServeMux()
-           mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-               d := &Data{}
-               d.Port = port
-               d.Host, _ = os.Hostname()
-               data, _ := json.Marshal(d)
-               w.Write([]byte(data))
-           })
-           http.ListenAndServe(port, mux)
+            fmt.Printf("tcp listen port%s\n", port)
+            mux := http.NewServeMux()
+            mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+                d := &Data{}
+                d.Port = port
+                d.Host, _ = os.Hostname()
+                data, _ := json.Marshal(d)
+                w.Write([]byte(data))
+            })
+            http.ListenAndServe(port, mux)
         }(k)
     }
     select {}
